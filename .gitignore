@@ -10,3 +10,6 @@ venv/
 
 # python
 __pychache__/
+
+# PWs
+*.pw
