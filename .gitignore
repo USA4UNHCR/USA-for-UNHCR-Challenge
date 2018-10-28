@@ -13,3 +13,6 @@ __pychache__/
 
 # PWs
 *.pw
+
+# SWPs
+*.swp
