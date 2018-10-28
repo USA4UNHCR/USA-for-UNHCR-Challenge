@@ -1,31 +1,31 @@
-# script for testing database access
+"""
+
+Script for testing database access to the the twitter data
+
+
+"""
 
 from pymongo import MongoClient
-import sys
+import getpass
 
-def connect_mongoDB(username):
-    '''Connect to MondoDB. Needs pw file (at same location as this script).'''
-    with open('mongodb.pw', 'r') as f:
-        pw = f.readline().rstrip()
-    connection_string = 'mongodb+srv://{}:{}@bananamania-aojj2.mongodb.net/test?retryWrites=true'.format(username,pw)
+def connect_mongoDB(username,password):
+    '''Connect to MondoDB'''
+    connection_string = 'mongodb+srv://{}:{}@bananamania-aojj2.mongodb.net/test?retryWrites=true'.format(username,password)
     client = MongoClient(connection_string, maxPoolSize=50)
     db = client.tweets
-    #serverStatusResult = db.command("serverStatus")
-    #pprint(serverStatusResult)
     return client
 
 
 
 if __name__ == "__main__":
     
-    print("username:")
-    username = input()
-    
-    client = connect_mongoDB(username)
+    username = input("Username: ")
+    password = getpass.getpass()
+
+    client = connect_mongoDB(username,password)
     database = client.tweets
     collection = database.tweets
-    
-    print("SUCCESS")
-    
+
     test_tweet = collection.find_one()
+    print("SUCCCESS")
     print("Sample tweet:\n%s" % test_tweet['full_text'])
