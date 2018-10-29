@@ -21,10 +21,10 @@ http://wash.unhcr.org/unhcr-wash-manual-for-refugee-settings/
 ## Datasets
 
 ### UNHCR WASH Borehole Data
-A csv file can be downloaded here: http://wash.unhcr.org/wash-gis-portal/
+A csv file can be downloaded here: http://wash.unhcr.org/wash-gis-portal/. It is also in the `UNHCR_data` folder.
 
 ### Refugee Camp Geolocation Data
-Contained in the data subfolder, two files in JSON format.
+Contained in the `UNHCR_data` subfolder. Note that camp and borehole datasets do not perfectly overlap, and that it will be necessary to identify for which camps both geolocation and borehole data is present. 
 
 ### General Purpose Satellite Imagery
 GBDX (https://platform.digitalglobe.com/gbdx/) provides vast amounts of sattelite imagery.
