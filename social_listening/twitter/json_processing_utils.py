@@ -197,7 +197,7 @@ def connect_mongoDB():
 
 
 def create_mongodb(client):
-    '''Connect to, or create, table.'''
+    '''Connect to, or create, database.'''
     db = client.tweets
     return db
 
@@ -211,15 +211,17 @@ def insert_tweet_mongodb(db, tweet, name):
 def insert_many_tweets_mongodb(db, jsons):
     '''Instert many tweets into MongoDB.'''
     tweets, ntweets = [], 0
+    collection = db.tweets
     for tweet, name in jsons:
         ntweets += 1
         tweet['u4u_dataset'] = name
         tweets.append(tweet)
         if len(tweets) == 1000:
             print('Inserting data into MongoDB. Inserted: {}'.format(ntweets))
-            collection = db.tweets
             collection.insert_many(tweets)
             tweets = []
+    if len(tweets) > 0:
+        collection.insert_many(tweets)
     print('Finished insert.')
 
 
