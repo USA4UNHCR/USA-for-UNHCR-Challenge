@@ -183,20 +183,14 @@ def get_fav_counts(jsons):
     return favecount, retweets
 
 
-def connect_mongoDB():
-    '''Connect to MondoDB. Needs pw file (at same location as this script).'''
-    with open('mongodb.pw', 'r') as f:
-        pw = f.readline().rstrip()
-    connection_string = 'mongodb+srv://friederike:{}@bananamania-aojj2.mongodb.net/test?retryWrites=true'.format(pw)
-    print(connection_string)
+def get_MongoDB_client(connection_string):
+    '''Connect to MondoDB.'''
+    print('Connecting to: {}.'.format(connection_string))
     client = MongoClient(connection_string, maxPoolSize=50)
-    db = client.admin
-    serverStatusResult = db.command("serverStatus")
-    pprint(serverStatusResult)
     return client
 
 
-def create_mongodb(client):
+def connect_tweetsdb(client):
     '''Connect to, or create, database.'''
     db = client.tweets
     return db
@@ -222,7 +216,7 @@ def insert_many_tweets_mongodb(db, jsons):
             tweets = []
     if len(tweets) > 0:
         collection.insert_many(tweets)
-    print('Finished insert.')
+    print('Finished insert of tweets. Inserted total: {}.'.format(ntweets))
 
 
 def connect_dynamoDB():
