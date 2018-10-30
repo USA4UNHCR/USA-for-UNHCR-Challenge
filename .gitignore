@@ -11,8 +11,9 @@ venv/
 # python
 __pychache__/
 
-# PWs
+# PWs and PEMs
 *.pw
+*.pem
 
 # SWPs
 *.swp
