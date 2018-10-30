@@ -65,7 +65,7 @@ numdocs = db['tweets'].find({'retweet_count':{'$gte':popular_retweetct},'retweet
 #Iterate through tweets and drop duplicates leaving only the record with the highest retweet count
 popular_tweets=pd.DataFrame()
 for i in range(0, numdocs, batchsize):
-    templist =  list(db['tweets'].find({'retweet_count':{'$gte':popular_retweetct},'retweeted_status':{'$exists':True}}, {'retweeted_status.created_at':1,'retweeted_status.id':1,'retweeted_status.full_text':1,'favorite_count':1,'retweeted_status.retweet_count':1,'entities.media.type':1,'user.description':1,
+    templist =  list(db['tweets'].find({'retweet_count':{'$gte':popular_retweetct},'retweeted_status':{'$exists':True}}, {'u4u_dataset':1,'retweeted_status.created_at':1,'retweeted_status.id':1,'retweeted_status.full_text':1,'retweeted_status.favorite_count':1,'retweeted_status.retweet_count':1,'user.description':1,
                                                            'retweeted_status.user.created_at':1,'retweeted_status.user.followers_count':1,'retweeted_status.user.friends_count':1,'retweeted_status.user.lang':1,'retweeted_status.user.listed_count':1,'retweeted_status.user.location':1,
                                                           'retweeted_status.user.name':1,'retweeted_status.user.screen_name':1},skip=i,limit=batchsize))
     tweetdf = pd.DataFrame([flattenDict(tweet) for tweet in templist])
