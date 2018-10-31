@@ -1,64 +1,37 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-from pymongo import MongoClient
+import getpass
 import pandas as pd
 import numpy as np
 
+from pymongo import MongoClient
 
-# In[ ]:
-
-
-# Insert your own credentials here!
-# each one should be a string, between quotes
-username = xxxxxxx
-pw = 'xxxxxxx
-
-
-# In[ ]:
-
+def get_login():
+    ''' prompts user to enter username and password for logging in '''
+    username = getpass.getpass("Username:")
+    password = getpass.getpass("Password:")
+    return([username,password])
 
 def connect_mongoDB(username,password):
-    '''Connect to MondoDB'''
-    connection_string = 'mongodb+srv://{}:{}@bananamania-aojj2.mongodb.net/test?retryWrites=true'.format(username,password)
+    ''' pass username and password in to connect to mongodb cluster '''
+    connection_string = 'mongodb+srv://{}:{}@boysenberry-hl61l.mongodb.net/'
+    'test?retryWrites=true'.format(username,password)
     client = MongoClient(connection_string)
     return client
 
-
-# In[ ]:
-
-
-client = connect_mongoDB(username,pw)
-db = client.tweets
-
-numdocs = db['tweets'].find({"place": {'$type': 3}}).count()
-
-
-# In[ ]:
-
-
-# number of tweets with the location field!
-print(numdocs)
-
-
-# In[ ]:
-
-
-docs = list(db['tweets'].find({"place":{"$type": 3}}, {'created_at':1,'full_text':1,'favorite_count':1,'retweet_count':1,'entities.media.type':1,'user.description':1,
-                                                           'user.created_at':1,'user.followers_count':1,'user.friends_count':1,'user.lang':1,'user.listed_count':1,'user.location':1,
-                                                          'user.name':1,'user.screen_name':1, 'place':1,'u4u_dataset':1}))
-
-
-# In[ ]:
-
+def pull_data(username,password):
+    ''' use open mongodb connection to pull data as docs '''
+    connection = connect_mongoDB(username,password)
+    db = connection.tweets
+    # docs = db['tweets'].find_one() #for testing purposes
+    docs = list(db['tweets'].find({"place":{"$type": 3}},   \
+        {'created_at':1,'full_text':1,'favorite_count':1,'retweet_count':1, \
+        'entities.media.type':1,'user.description':1,'user.created_at':1, \
+        'user.followers_count':1,'user.friends_count':1,'user.lang':1, \
+        'user.listed_count':1,'user.location':1,'user.name':1,'user.screen_name':1, \
+        'place':1,'u4u_dataset':1}))
+    return docs
 
 def flattenDict(d, result=None):
-    '''
-    Creates pandas dataframe from nested dictionary
-    '''
+    ''' create pandas dataframe from nested dictionary '''
     if result is None:
         result = {}
     for key in d:
@@ -81,26 +54,24 @@ def flattenDict(d, result=None):
             result[key]=value
     return result
 
-
-# In[ ]:
-
-
-tweetdf = pd.DataFrame([flattenDict(tweet) for tweet in docs])
-
-
-# In[ ]:
-
-
-coordinates_df = pd.DataFrame()
-for num in range(len(docs)):
-    coordinates_df = coordinates_df.append(pd.DataFrame({'coordinates': docs[num]['place']['bounding_box']['coordinates'],'_id':[docs[num]['_id']]}, index =[num]))
+def main():
+    # prompt for username and password
+    login = get_login()
+    username, password = login
+    # pull data
+    docs = pull_data(username, password)
+    # flatten data into pandas dataframe
+    tweetdf = pd.DataFrame([flattenDict(tweet) for tweet in docs])
+    # grab array of coordinates and append to data frame
+    coordinates_df = pd.DataFrame()
+    for num in range(len(docs)):
+        coordinates_df = coordinates_df.append(pd.DataFrame({'coordinates': \
+        docs[num]['place']['bounding_box']['coordinates'],'_id':[docs[num]['_id']]}, index =[num]))
     
-tweetdf = tweetdf.merge(coordinates_df,on='_id',how='left')   
+    tweetdf = tweetdf.merge(coordinates_df,on='_id',how='left')  
+    # export as csv with UTF encoding
+    tweetdf.to_csv('location_tweets.csv',index=False,encoding='utf-8-sig')
 
-
-# In[ ]:
-
-
-# Enconding 'utf-8-sig' keeps non-Latin characters and other Unicode/Emoji symbols
-tweetdf.to_csv('loc_tweets.csv',index=False,encoding='utf-8-sig')
+if  __name__ =='__main__':
+    main() 
 
