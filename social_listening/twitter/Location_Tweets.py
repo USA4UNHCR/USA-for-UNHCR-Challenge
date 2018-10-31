@@ -41,15 +41,15 @@ def flattenDict(d, result=None):
             for keyIn in value:
                 value1[".".join([key,keyIn])]=value[keyIn]
             flattenDict(value1, result)
-        elif isinstance(value, (list, tuple)):   
+        elif isinstance(value, (list, tuple)):
             for indexB, element in enumerate(value):
                 if isinstance(element, dict):
                     value1 = {}
                     for keyIn in element:
-                        newkey = ".".join([key,keyIn])        
+                        newkey = ".".join([key,keyIn])
                         value1[".".join([key,keyIn])]=value[indexB][keyIn]
                     for keyA in value1:
-                        flattenDict(value1, result)   
+                        flattenDict(value1, result)
         else:
             result[key]=value
     return result
@@ -67,11 +67,10 @@ def main():
     for num in range(len(docs)):
         coordinates_df = coordinates_df.append(pd.DataFrame({'coordinates': \
         docs[num]['place']['bounding_box']['coordinates'],'_id':[docs[num]['_id']]}, index =[num]))
-    
-    tweetdf = tweetdf.merge(coordinates_df,on='_id',how='left')  
+
+    tweetdf = tweetdf.merge(coordinates_df,on='_id',how='left')
     # export as csv with UTF encoding
     tweetdf.to_csv('location_tweets.csv',index=False,encoding='utf-8-sig')
 
 if  __name__ =='__main__':
-    main() 
-
+    main()

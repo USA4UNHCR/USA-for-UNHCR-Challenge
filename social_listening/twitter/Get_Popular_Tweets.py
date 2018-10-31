@@ -7,8 +7,8 @@ import numpy as np
 
 ##################################################################################
 #login credentials
-username = 'jenny'
-pw = 'awesome!'
+username = xxxxx
+pw = xxxxx
 
 #parameters
 popular_retweetct = 100 #minimun # of retweet counts to include in filter
@@ -80,4 +80,3 @@ for i in range(0, numdocs, batchsize):
 popular_tweets = popular_tweets.drop(['retweeted_status.id'], axis=1).reset_index()
 popular_tweets = popular_tweets.groupby('retweeted_status.id', group_keys=False).apply(lambda x: x.loc[x["retweeted_status.retweet_count"].idxmax()])
 popular_tweets.to_csv('popular_tweets.csv',index=False, encoding='utf-8-sig')
-
