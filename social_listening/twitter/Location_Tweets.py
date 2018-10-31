@@ -14,8 +14,8 @@ import numpy as np
 
 # Insert your own credentials here!
 # each one should be a string, between quotes
-username = 'yourusername'
-pw = 'yourpassword'
+username = xxxxxxx
+pw = 'xxxxxxx
 
 
 # In[ ]:
@@ -34,9 +34,7 @@ def connect_mongoDB(username,password):
 client = connect_mongoDB(username,pw)
 db = client.tweets
 
-# The queries below are based on MongoDB queries
-# The docs are here: https://docs.mongodb.com/manual/reference/operator/query/
-numdocs = db['tweets'].find({"user.location":{"$not":{"$eq": ""}}}).count()
+numdocs = db['tweets'].find({"place": {'$type': 3}}).count()
 
 
 # In[ ]:
@@ -49,9 +47,9 @@ print(numdocs)
 # In[ ]:
 
 
-docs = list(db['tweets'].find({"user.location":{"$not":{ "$eq": ""}}}, {'created_at':1,'full_text':1,'favorite_count':1,'retweet_count':1,'entities.media.type':1,'user.description':1,
+docs = list(db['tweets'].find({"place":{"$type": 3}}, {'created_at':1,'full_text':1,'favorite_count':1,'retweet_count':1,'entities.media.type':1,'user.description':1,
                                                            'user.created_at':1,'user.followers_count':1,'user.friends_count':1,'user.lang':1,'user.listed_count':1,'user.location':1,
-                                                          'user.name':1,'user.screen_name':1}))
+                                                          'user.name':1,'user.screen_name':1, 'place':1,'u4u_dataset':1}))
 
 
 # In[ ]:
@@ -88,6 +86,16 @@ def flattenDict(d, result=None):
 
 
 tweetdf = pd.DataFrame([flattenDict(tweet) for tweet in docs])
+
+
+# In[ ]:
+
+
+coordinates_df = pd.DataFrame()
+for num in range(len(docs)):
+    coordinates_df = coordinates_df.append(pd.DataFrame({'coordinates': docs[num]['place']['bounding_box']['coordinates'],'_id':[docs[num]['_id']]}, index =[num]))
+    
+tweetdf = tweetdf.merge(coordinates_df,on='_id',how='left')   
 
 
 # In[ ]:
