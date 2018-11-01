@@ -24,7 +24,7 @@ def pull_data(username,password):
     # docs = db['tweets'].find_one() #for testing purposes
     docs = list(db['tweets'].find({"retweeted_status":{"$exists":False}},   \
         {'created_at':1,'full_text':1,'favorite_count':1,'retweet_count':1, \
-        'entities.media.type':1,'user.description':1, 'user.created_at':1,  \
+        'u4u_dataset':1,'user.description':1, 'user.created_at':1,  \
         'user.followers_count':1,'user.friends_count':1,'user.lang':1,      \
         'user.listed_count':1,'user.location':1, 'user.name':1,             \
         'user.screen_name':1}))
