@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import getpass
+import random
 
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
@@ -9,7 +10,9 @@ from bs4 import BeautifulSoup
 
 DATALOC = '../../data/news/'
 KEYWORDS = ['refugee', 'refugees', 'migrant', 'migrants', 'asylum', 'rohingya',
-            'immigrant', 'immigrants', 'UNHCR']
+            'immigrant', 'immigrants', 'UNHCR', 'UN Refugees', 'ICE',
+            'deportation', 'border wall', 'illegal border crossing', 'syrians',
+           'rohingya', 'fleeing']
 
 
 def get_jsonfiles(foldername):
@@ -26,8 +29,19 @@ def get_jsons(jsonfiles, foldername):
 
 
 def get_article_text(html):
+    '''Get full text: h1, h2, body.'''
     soup = BeautifulSoup(html)
-    article = soup.find('article')
+    try:
+        article = soup.find('article')
+    except AttributeError:
+        return (False, )
+    try:
+        segments = article.findAll('p')
+        fulltext = []
+        for segment in segments:
+            fulltext.append(segment.text)
+    except AttributeError:
+        return (False, )
     try: 
         h1 = article.find('h1').text 
     except AttributeError: 
@@ -36,16 +50,29 @@ def get_article_text(html):
         h2 = article.find('h2').text 
     except AttributeError: 
         h2 = ''
-    segments = article.findAll('p')
-    fulltext = []
-    for segment in segments:
-        fulltext.append(segment.text)
     try:
         timetag = soup.find('time')
         timetag = (timetag.text, timetag.attrs['datetime'])
     except AttributeError:
         timetag = ('', '')
-    return h1, h2, ' '.join(fulltext[:-1]), timetag
+    return (True, (h1, h2, ' '.join(fulltext[:-1]), timetag))
+
+
+def parse_success(jsons):
+    with open('not_parsed.csv', 'w') as f:
+        f.write('Not parsed URLs\n')
+    success, total = 0, 0
+    for article in jsons:
+        total += 1
+        parsed = get_article_text(article['html'])
+        if parsed[0]:
+            success += 1
+        else:
+            print('Skipped {}.'.format(article['url']))
+            with open('not_parsed.csv', 'a') as f:
+                savestring = '{}\n'.format(article['url'])
+                f.write(savestring)
+    return success, total
 
 
 def refugee_related(text):
@@ -67,33 +94,39 @@ def connect_newsarticlesdb(client):
     db = client.newsarticles
     return db
 
+
 def insert_many_newsarticles(jsons, db):
-    articles, narticles, skipped, relevant = [], 0, 0, 0
+    narticles, skipped, nrelated, = 0, 0, 0
+    rarticles, urarticles = [], []
     for article in jsons:
         narticles += 1
-        try:
-            h1, h2, text, timetag = get_article_text(article['html'])
-            article['h1'] = h1
-            article['h2'] = h2
-            article['body_text'] = text
-            article['datetime'] = timetag[1]
-            article['publication_day'] = timetag[0]
-            related = refugee_related(text)
-            relevant.append(related)
+        parsed = get_article_text(article['html'])
+        if parsed[0]:
+            article['h1'] = parsed[1][0]
+            article['h2'] = parsed[1][1]
+            article['body_text'] = parsed[1][2]
+            article['datetime'] = parsed[1][3][1]
+            article['publication_day'] = parsed[1][3][0]
+            related = refugee_related(parsed[1][2])
             article['refugee_related'] = related
-            articles.append(article)
-        except AttributeError:
+            if related:
+                nrelated += 1
+                rarticles.append(article)
+            else:
+                urarticles.append(article)
+        else:
             skipped += 1
-        if len(articles) == 1000:
-            collection = db.newsarticles
-            print('Inserting data into MongoDB. Inserted: {}'.format(narticles))
-            collection.insert_many(articles)
-            articles = []
-    if len(articles) > 0:
-        collection.insert_many(articles)
-    print('Finished insert of articles. Inserted total: {}. Skipped {}.  Relevant {}.'.format(
-        narticles, skipped, sum(relevant))
-    )
+        if len(rarticles) == 100:
+            collection = db.breitbart
+            print('Inserting data into MongoDB. Inserted: {}'.format(2*len(rarticles)))
+            collection.insert_many(rarticles)
+            collection.insert_many(random.sample(urarticles, len(rarticles)))
+            rarticles, urarticles = [], []
+    if len(rarticles) > 0:
+        collection = db.breitbart
+        collection.insert_many(rarticles)
+        collection.insert_many(random.sample(urarticles, len(rarticles)))
+    print('Finished insert of articles. Total: {}. Skipped {}.  Relevant {}.'.format(narticles, skipped, nrelated))
 
 
 def main():
