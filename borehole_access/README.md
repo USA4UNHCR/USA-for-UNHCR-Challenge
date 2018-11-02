@@ -15,10 +15,11 @@ http://wash.unhcr.org/
 
 ### Emergency Water Standard
 For UNHCR camp standards for water access, see here: https://emergency.unhcr.org/entry/248763/emergency-water-standard
+
 For UNHCR camp standard for planned camps, see here: https://emergency.unhcr.org/entry/248797/camp-planning-standards-planned-settlements
 
 ### WASH Manual
-http://wash.unhcr.org/unhcr-wash-manual-for-refugee-settings/
+For information on how WASH specifically operates in refugee settings, see here: http://wash.unhcr.org/unhcr-wash-manual-for-refugee-settings/
 
 
 ## Datasets
