@@ -14,7 +14,8 @@ The tools you build, and the insights you glean, can both help UNHCR make a diff
 http://wash.unhcr.org/
 
 ### Emergency Water Standard
-https://emergency.unhcr.org/entry/248763/emergency-water-standard
+For UNHCR camp standards for water access, see here: https://emergency.unhcr.org/entry/248763/emergency-water-standard
+For UNHCR camp standard for planned camps, see here: https://emergency.unhcr.org/entry/248797/camp-planning-standards-planned-settlements
 
 ### WASH Manual
 http://wash.unhcr.org/unhcr-wash-manual-for-refugee-settings/
@@ -23,7 +24,7 @@ http://wash.unhcr.org/unhcr-wash-manual-for-refugee-settings/
 ## Datasets
 
 ### UNHCR WASH Borehole Data
-A csv file can be downloaded here: http://wash.unhcr.org/wash-gis-portal/. It is also in the `tools_borehole_data` folder.
+A csv file can be downloaded here: http://wash.unhcr.org/wash-gis-portal/. It is also in the `tools_borehole_data` folder as`boreholes_wash.csv`. Note the data is sparse and not all boreholes that overlap with mapped tents include `yield` or `daily pumping time`.
 
 ### Refugee Camp Geolocation Data
 Contained in the `UNHCR_data` subfolder. Note that camp and borehole datasets do not perfectly overlap, but you can view the list of camps and boreholes that overlap (`tools_borehole_data`)  - all of which are in Africa. 
