@@ -8,6 +8,8 @@ Water access is a basic human right, and is essential to the life, health, and d
 
 The tools you build, and the insights you glean, can both help UNHCR make a difference on the ground, and raise awareness for the refugee crisis.
 
+The `Data Summary` notebook contains a rough overview of the datasets, along with some utility functions that you may find helpful (for example to calculate geographical distances based on longitude and latitude). The `UNHCR_data` subfolder contains raw data. The coverage of the borehole data and the tent geolocation data does not necessarily overlap. An additional file, `filtered_geolocation_data.json`, only contains entries for tents that are within 50km of a borehole. The function that generated this dataset is at the end of the `Data Summary` notebook. Note that the function may take a while to run. 
+
 ## UNHCR WASH Resources
 http://wash.unhcr.org/
 
